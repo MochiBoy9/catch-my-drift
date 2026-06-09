@@ -29,5 +29,55 @@
                 <span class="font-bold text-gray-400">controller id:</span><span id="gamepad-id"></span>
             </div>
         </main>
+
+        <script>
+            const statusDiv = document.getElementById('status');
+            const displayMain = document.getElementById('controller-display');
+            const buttonsContainer = document.getElementById('buttons-container');
+            const axesContainer = document.getElementById('axes-container');
+            const gamepadIdSpan = document.getElementById('gamepad-id');
+
+            let gamepadIndex = null;
+
+            window.addEventListener("controllerconnected", (e) => {
+                console.log("controller currently connected:", e.gamepad);
+                gamepadIndex = e.gamepad.index;
+                statusDiv.textContent = `connected: ${e.gamepad.id}`;
+                statusDiv.classList.remove('border-red-500/30', 'text-red-400');
+                statusDiv.classList.add('border-green-500/30', 'text-green-400');
+                displayMain.classList.remove('hidden')
+                setupUI(e.gamepad);
+                requestAnimationFrame(updateLoop);
+            });
+            window.addEventListener("controllerdisconnected", (e) => {
+                console.log("controller disconnected")
+                if (gamepadIndex === e.gamepad.index) {
+                    gamepadIndex = null;
+                    statusDiv.textContent = "no controller connected";
+                    statusDiv.classList.remove('border-green-500/30', 'text-green-400');
+                    statusDiv.classList.add('border-red-500/30', 'text-red-400');
+                    displayMain.classList.add('hidden');
+                }
+            });
+            function setupUI(gamepad) {
+                buttonsContainer.innerHTML = '';
+                axesContainer.innerHTML = '';
+                gamepadIdSpan.textContent = gamepad.id;
+                gamepad.buttons.forEach((button, index) => {
+                    const btnDiv = document.createElement('div');
+                    btnDiv.id = `btn-${index}`;
+                    btnDiv.className = "flex justify-between items-center bg-gray-950 p-3 rounded-xl border border-gray-800 transition-colors";
+                    btnDiv.innerHTML = `
+                    <span class="text-sm font-medium text-gray-500">Btn ${index}</span>
+                    <span class="val text-cs font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800 text-gray-500">0.00</span>
+                    `;
+                    buttonsContainer.appendChild(btnDiv);
+                });
+
+                gamepad.axes.forEach((axis, index) => {
+                    const axisDiv = document.createElement('div');
+                }
+            
+        </script>
     </body>
 </html>
