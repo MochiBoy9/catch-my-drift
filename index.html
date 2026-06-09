@@ -5,6 +5,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>ayo this got stick drift?</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            .hud-btn {fill: #111827; stroke: #374151; stroke-width: 2; transition: fill 0.1s ease, stroke 0.1s ease; }
+            .hud-btn.active {fill: #6366f1; stroke: #818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+            .hud-stick {fill: #374151; stroke: #4b5563; stroke-width: 1.5;}
+            .hud-stick.active {fill: #6366f1; stroke:#818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+            .hud-stick-drift {fill: #fbbf24; stroke: #fbbf24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); }
+            .hud-trigger-bar {fill: #6366f1; transform-origin: left; transition: transform 0.05s linear;}
+        </style>
     </head>
     <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col items-center p-8">
         <header class="text-center mb-8">
@@ -15,9 +23,49 @@
             no controller found brah
         </div>
         <main id="controller-display" class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
-            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                <h2 class="text-xl font-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">buttons and 'trigs</h2>
-                <div id="buttons-container" class="grid grid-cols-2 gap-3">
+            <div class="w-full bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl flex justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#4f46e5 1px, transparent 1px), linear-gradient(90deg, #4f46e5 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                <svg viewBox="0 0 800 400" class="w-full max-w-2xl relative z-10">
+                    <path d="M 150 100 C 50 100, 20 180, 50 280 C 70 340, 120 350, 160 300 C 180 270, 250 220, 400 220 C 550 220, 620 270, 640 300 C 680 350, 730 340, 750 280 C 780 180, 750 100, 650 100 Z" fill="#030712" stroke="#1f2937" stroke-width="4" stroke-linejoin="round"/>
+                  
+                    <path id="svg-btn-4" d="M 160 95 C 160 70, 250 65, 290 80 L 290 95 Z" class="hud-btn" />
+                    <path id="svg-btn-5" d="M 640 95 C 640 70, 550 65, 510 80 L 510 95 Z" class="hud-btn" />
+
+                    <g transform="translate(160,35)">
+                        <rect width="100" height="20" rx="3" fill="#111827" stroke="#1f2937" stroke-width="2" />
+                        <rect id="svg-trig-6" width="100" height="20" rx="3" class="hud-trigger-bar" transform="scale(0, 1)"/>
+                        <text x="-45" y="15" fill="#4b5563" class="font-mono text-xs font-bold">LT (B6)</text>
+                    </g>
+                    <g transform="translate(240, 220)">
+                        <rect width="100" height="20" rx="3" fill="#111827" stroke="#1f2937" stroke-width="2" />
+                        <rect id="svg-trig-7" width="100" height="20" rx="3" class="hud-trigger-bar" transform="scale(0, 1)"/>
+                        <text x="110" y="15" fill="#4b5563" class="font-mono text-xs font-bold">RT (B7)</text>
+                    </g>
+                    <g transform="translate(240, 220)">
+                        <rect id="svg-btn-12" x="-12" y="-36" width="24" rx="2" class="hud-btn" />
+                        <rect id="svg-btn-13" x="-12" y="10" width="24" height="26" rx="2" class="hud-btn" />
+                        <rect id="svg-btn-14" x="-36" y="-12" width="26" height="24" rx="2" class="hud-btn" />
+                        <rect id="svg-btn-15" x="10" y="-12" width="26" height="24" rx="2" class="hud-btn" />
+                        <circle cx="0" cy="0" r="12" fill="#030712"/>
+                    </g>
+                    <g transform="translate(560, 150)">
+                        <circle id="svg-btn-3" cx="0" cy="-32" r="14" class="hud-btn" /> <text x="-4" y="-28" fill="#4b5563" class="font-bold text-xs pointer-events-none">Y</text>
+                        <circle id="svg-btn-1" cx="32" cy="0" r="14" class="hud-btn" /> <text x="29" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">B</text>
+                        <circle id="svg-btn-0" cx="0" cy="32" r="14" class="hud-btn" /> <text x="-4" y="36" fill="#4b5563" class="font-bold text-xs pointer-events-none">A</text>
+                        <circle id="svg-btn-2" cx="-32" cy="0" r="14" class="hud-btn" /> <text x="-36" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">X</text>
+                    </g>
+                    <ellipse id="svg-btn-8" cx="360" cy="140" rx="15" ry="7" class="hud-btn" />
+                    <ellipse id="svg-btn-9" cx="440" cy="140" rx="15" ry="7" class="hud-btn" />
+                    <g transform="translate(200, 140)">
+                        <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="6" fill="1f2937" />
+                        <circle id="svg-stick-0" cx="0" cy="0" r="22" class="hud-stick" />
+                        <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 1 (L)</text>
+                    </g>
+
+                </svg>
+                
                 </div>
             </div>
             <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between">
@@ -115,10 +163,7 @@
                         }
                     }
                 });
-            }
-        }
-
-    const totalSticks = Math.ceil(gamepad.axes.length / 2);
+                 const totalSticks = Math.ceil(gamepad.axes.length / 2);
     for (let i = 0; i < totalSticks; i++) {
         const xAxisIndex = i * 2;
         const yAxisIndex = (i * 2) + 1;
@@ -131,8 +176,8 @@
             xSpan.textContent = xValue.toFixed(2);
             ySpan.textContent = yValue.toFixed(2);
             const accuracyThreshold = 0.01;
-            if (math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold) {
-                dot.classList.remove('bg-indigo-500', 'shadow.indigo-500/50');
+            if (Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold) {
+                dot.classList.remove('bg-indigo-500', 'shadow-indigo-500/50');
                 dot.classList.add('bg-amber-400', 'shadow-amber-400/50')
                 xSpan.classList.add('text-amber-400');
                 ySpan.classList.add('text-amber-400');
@@ -147,8 +192,12 @@
         const translateY = yValue * maxPixels;
         dot.style.transform = `translate(${translateX}px, ${translateY}px)`;
             }
-        }
-        requestAnimationFrame(updateLoop);
+        }  
+    }
+    requestAnimationFrame(updateLoop);
+}
+
+
         </script>
     </body>
 </html>
