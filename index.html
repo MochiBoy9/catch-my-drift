@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ayo this got stick drift?</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col items-center p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-indigo-400 mb-2">ayo this got stick drift???</h1>
+            <p class="text-gray-400">connect a controller and press a button</p>
+        </header>
+        <div id="status" class="bg-gray-900 border border-red-500/30 text-red-400 px-6 py-3 rounded-xl mb-8 font-semibold shadow-lg transition-all">
+            no controller found brah
+        </div>
+        <main id="controller-display" class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
+            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
+                <h2 class="text-xl fond-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">buttons and 'trigs</h2>
+                <div id="buttons-container" class="grid grid-cols-2 gap-3">
+                </div>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between">
+                <h2 class="text-xl font-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">analog sticks</h2>
+                <div id="axes-container" class="space-y-4">
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-gray-950 rounded-xl border border-gray-800 text-xs text-gray-500">
+                <span class="font-bold text-gray-400">controller id:</span><span id="gamepad-id"></span>
+            </div>
+        </main>
+    </body>
+</html>
