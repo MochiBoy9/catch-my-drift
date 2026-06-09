@@ -16,7 +16,7 @@
         </div>
         <main id="controller-display" class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
             <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl">
-                <h2 class="text-xl fond-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">buttons and 'trigs</h2>
+                <h2 class="text-xl font-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">buttons and 'trigs</h2>
                 <div id="buttons-container" class="grid grid-cols-2 gap-3">
                 </div>
             </div>
@@ -39,7 +39,7 @@
 
             let gamepadIndex = null;
 
-            window.addEventListener("controllerconnected", (e) => {
+            window.addEventListener("gamepadconnected", (e) => {
                 console.log("controller currently connected:", e.gamepad);
                 gamepadIndex = e.gamepad.index;
                 statusDiv.textContent = `connected: ${e.gamepad.id}`;
@@ -49,7 +49,7 @@
                 setupUI(e.gamepad);
                 requestAnimationFrame(updateLoop);
             });
-            window.addEventListener("controllerdisconnected", (e) => {
+            window.addEventListener("gamepaddisconnected", (e) => {
                 console.log("controller disconnected")
                 if (gamepadIndex === e.gamepad.index) {
                     gamepadIndex = null;
@@ -69,15 +69,86 @@
                     btnDiv.className = "flex justify-between items-center bg-gray-950 p-3 rounded-xl border border-gray-800 transition-colors";
                     btnDiv.innerHTML = `
                     <span class="text-sm font-medium text-gray-500">Btn ${index}</span>
-                    <span class="val text-cs font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800 text-gray-500">0.00</span>
+                    <span class="val text-xs font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800 text-gray-500">0.00</span>
                     `;
                     buttonsContainer.appendChild(btnDiv);
                 });
 
-                gamepad.axes.forEach((axis, index) => {
-                    const axisDiv = document.createElement('div');
-                }
-            
+                const totalSticks = Math.ceil(gamepad.axes.length / 2);
+                for (let i = 0; i < totalSticks; i++) {
+                    const stickDiv = document.createElement('div');
+                    stickDiv.className = "bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col items-center gap-4";
+                    stickDiv.innerHTML = `
+                    <div class="w-full flex justify-between text-sm font-medium text-gray-400">
+                        <span>Stick ${i + 1}</span>
+                        <span class="font-mono text-xs text-indigo-400">
+                            X: <span id="stick-${i}-x-val">0.00</span> | Y: <span id="stick-${i}-y-val">0.00</span>
+                        </span>
+                    </div>
+                    <div class="relative w-32 h-32 bg-gray-900 rounded-full border border-gray-800 flex items-center justify-center">
+                        <div class="absolute w-full h-[1px] bg-gray-800"></div>
+                        <div class="absolute h-full w-[1px] bg-gray-800"></div>
+                        <div class="absolute w-6 h-6 border border-dashed border-gray-700 rounded-full"></div>
+                        <div id="stick-${i}-dot" class="absolute w-4 h-4 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50 transition-all duration-75" style="transform: translate(0px, 0px)"></div>
+                    </div>
+                `;
+                axesContainer.appendChild(stickDiv);
+            }
+        }
+        function updateLoop() {
+            if (gamepadIndex === null) return;
+            const gamepad = navigator.getGamepads()[gamepadIndex];
+            if (gamepad) {
+                gamepad.buttons.forEach((button, index) => {
+                    const btnDiv = document.getElementById(`btn-${index}`);
+                    if (btnDiv) {
+                        const valSpan = btnDiv.querySelector('.val');
+                        valSpan.textContent = button.value.toFixed(2);
+                        if (button.pressed) {
+                            btnDiv.classList.remove('bg-gray-950', 'border-gray-800');
+                            btnDiv.classList.add('bg-indigo-900/20', 'border-indigo-500');
+                            valSpan.classList.add('text-indigo-400', 'border-indigo-500/50');
+                        } else {
+                            btnDiv.classList.remove('bg-indigo-600/20', 'border-indigo-500');
+                            btnDiv.classList.add('bg-gray-950', 'border-gray-800');
+                            valSpan.classList.remove('text-indigo-400', 'border-indigo-500/50');
+                        }
+                    }
+                });
+            }
+        }
+
+    const totalSticks = Math.ceil(gamepad.axes.length / 2);
+    for (let i = 0; i < totalSticks; i++) {
+        const xAxisIndex = i * 2;
+        const yAxisIndex = (i * 2) + 1;
+        const xValue = gamepad.axes[xAxisIndex] || 0;
+        const yValue = gamepad.axes[yAxisIndex] !== undefined ? gamepad.axes[yAxisIndex] : 0;
+        const xSpan = document.getElementById(`stick-${i}-x-val`);
+        const ySpan = document.getElementById(`stick-${i}-y-val`);
+        const dot = document.getElementById(`stick-${i}-dot`);
+        if (xSpan && ySpan && dot) {
+            xSpan.textContent = xValue.toFixed(2);
+            ySpan.textContent = yValue.toFixed(2);
+            const accuracyThreshold = 0.01;
+            if (math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold) {
+                dot.classList.remove('bg-indigo-500', 'shadow.indigo-500/50');
+                dot.classList.add('bg-amber-400', 'shadow-amber-400/50')
+                xSpan.classList.add('text-amber-400');
+                ySpan.classList.add('text-amber-400');
+            } else {
+                dot.classList.remove('bg-amber-400', 'shadow-amber-400/50');
+                dot.classList.add('bg-indigo-500', 'shadow-indigo-500/50');
+                xSpan.classList.remove('text-amber-400');
+                ySpan.classList.remove('text-amber-400');
+            }
+              const maxPixels = 56;
+        const translateX = xValue * maxPixels;
+        const translateY = yValue * maxPixels;
+        dot.style.transform = `translate(${translateX}px, ${translateY}px)`;
+            }
+        }
+        requestAnimationFrame(updateLoop);
         </script>
     </body>
 </html>
