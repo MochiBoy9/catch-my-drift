@@ -10,7 +10,7 @@
             .hud-btn.active {fill: #6366f1; stroke: #818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
             .hud-stick {fill: #374151; stroke: #4b5563; stroke-width: 1.5;}
             .hud-stick.active {fill: #6366f1; stroke:#818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
-            .hud-stick-drift {fill: #fbbf24; stroke: #fbbf24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); }
+            .hud-stick.drift {fill: #fbbf24; stroke: #fbbf24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); }
             .hud-trigger-bar {fill: #6366f1; transform-origin: left; transition: transform 0.05s linear;}
         </style>
     </head>
@@ -59,20 +59,20 @@
                     <ellipse id="svg-btn-9" cx="440" cy="140" rx="15" ry="7" class="hud-btn" />
                     <g transform="translate(200, 140)">
                         <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
-                        <circle cx="0" cy="0" r="6" fill="1f2937" />
+                        <circle cx="0" cy="0" r="6" fill="#1f2937" />
                         <circle id="svg-stick-0" cx="0" cy="0" r="22" class="hud-stick" />
                         <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 1 (L)</text>
                     </g>
                     <g transform="translate(500, 230)">
                         <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
-                        <circle cx="0" cy="0" r="6" fill="1f2937" />
+                        <circle cx="0" cy="0" r="6" fill="#1f2937" />
                         <circle id="svg-stick-1" cx="0" cy="0" r="22" class="hud-stick" />
                         <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 2 (R)</text>
                     </g>
                 </svg>
                 </div>
             </div>
-         <div class="w-full grid grid-cols-1 md-grid-cols-2 gap-4 text-xs font-mono">
+         <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
             <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
                 <div>
                     <span class="text-indigo-400 block font-bold mb-1">Axis_L</span>
@@ -141,7 +141,7 @@
                     }
                 }
             });
-            const trigL - document.getElementById('svg-trig-6');
+            const trigL = document.getElementById('svg-trig-6');
             const trigR = document.getElementById('svg-trig-7');
             if (trigL && gamepad.buttons[6]) trigL.style.transform = `scale(${gamepad.buttons[6].value}, 1)`;
             if (trigR && gamepad.buttons[7]) trigR.style.transform = `scale(${gamepad.buttons[7].value}, 1)`;
@@ -154,14 +154,14 @@
                 const xSpan = document.getElementById(`stick-${i}-x-val`);
                 const ySpan = document.getElementById(`stick-${i}-y-val`);
                 const hudStickCircle = document.getElementById(`svg-stick-${i}`);
-                const statusBadge = document.getElementById('stick-${i}-drift-status');
+                const statusBadge = document.getElementById(`stick-${i}-drift-status`);
                 if (xSpan && ySpan && hudStickCircle) {
                     xSpan.textContent = xValue.toFixed(2);
                     ySpan.textContent = yValue.toFixed(2);
                     const accuracyThreshold = 0.05;
                     const hasInput = Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold;
                     const stickClickButton = i === 0 ? 10 : 11;
-                    const isClicked = gamepad.butons[stickClickButton]?.pressed;
+                    const isClicked = gamepad.buttons[stickClickButton]?.pressed;
                     if (isClicked) {
                         hudStickCircle.classList.add('active');
                     } else {
@@ -177,7 +177,7 @@
                         hudStickCircle.classList.remove('drift');
                         if (statusBadge) {
                             statusBadge.textContent = 'no drift';
-                            statusBadge.className = "text-green=500 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20";
+                            statusBadge.className = "text-green-500 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20";
                         }
                     }
                     const maxPixels = 18;
