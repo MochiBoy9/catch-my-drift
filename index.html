@@ -6,190 +6,221 @@
         <title>ayo this got stick drift?</title>
         <script src="https://cdn.tailwindcss.com"></script>
         <style>
-            .hud-btn {fill: #111827; stroke: #374151; stroke-width: 2; transition: fill 0.1s ease, stroke 0.1s ease; }
-            .hud-btn.active {fill: #6366f1; stroke: #818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
-            .hud-stick {fill: #374151; stroke: #4b5563; stroke-width: 1.5;}
-            .hud-stick.active {fill: #6366f1; stroke:#818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
-            .hud-stick.drift {fill: #fbbf24; stroke: #fbbf24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); }
-            .hud-trigger-bar {fill: #6366f1; transform-origin: left; transition: transform 0.05s linear;}
+            /* Core HUD Styling */
+            .hud-btn { fill: #111827; stroke: #374151; stroke-width: 2; transition: fill 0.1s ease, stroke 0.1s ease; }
+            .hud-btn.active { fill: #6366f1; stroke: #818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+            
+            /* Enhanced Joystick Telemetry Elements */
+            .hud-stick-base { fill: #111827; stroke: #1f2937; stroke-width: 2; }
+            .hud-stick { fill: #374151; stroke: #4b5563; stroke-width: 1.5; transition: transform 0.05s ease-out; }
+            .hud-stick.active { fill: #6366f1; stroke: #818cf8; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6)); }
+            .hud-stick.drift { fill: #fbbf24; stroke: #fbbf24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6)); }
+            
+            /* Linear Trigger Accelerators */
+            .hud-trigger-bg { fill: #111827; stroke: #374151; stroke-width: 2; }
+            .hud-trigger-bar { fill: #6366f1; transform-origin: left; transition: transform 0.05s linear; }
         </style>
     </head>
     <body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col items-center p-8">
         <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-indigo-400 mb-2">ayo this got stick drift???</h1>
+            <h1 class="text-4xl font-bold text-indigo-400 mb-2 tracking-wider">ayo this got stick drift???</h1>
             <p class="text-gray-400">connect a controller and press a button</p>
         </header>
+
         <div id="status" class="bg-gray-900 border border-red-500/30 text-red-400 px-6 py-3 rounded-xl mb-8 font-semibold shadow-lg transition-all">
             no controller found brah
         </div>
-        <main id="controller-display" class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
+
+        <main id="controller-display" class="w-full max-w-4xl flex flex-col gap-6 hidden">
+            
             <div class="w-full bg-gray-900 p-8 rounded-2xl border border-gray-800 shadow-xl flex justify-center relative overflow-hidden">
                 <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#4f46e5 1px, transparent 1px), linear-gradient(90deg, #4f46e5 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-                <svg viewBox="0 0 800 400" class="w-full max-w-2xl relative z-10">
-                    <path d="M 150 100 C 50 100, 20 180, 50 280 C 70 340, 120 350, 160 300 C 180 270, 250 220, 400 220 C 550 220, 620 270, 640 300 C 680 350, 730 340, 750 280 C 780 180, 750 100, 650 100 Z" fill="#030712" stroke="#1f2937" stroke-width="4" stroke-linejoin="round"/>
-                  
-                    <path id="svg-btn-4" d="M 160 95 C 160 70, 250 65, 290 80 L 290 95 Z" class="hud-btn" />
-                    <path id="svg-btn-5" d="M 640 95 C 640 70, 550 65, 510 80 L 510 95 Z" class="hud-btn" />
+                <svg viewBox="0 0 800 450" class="w-full max-w-2xl relative z-10">
+                    <path d="M 220 120 C 140 120, 110 140, 90 220 C 70 300, 95 400, 150 410 C 190 415, 230 350, 260 320 C 320 300, 480 300, 540 320 C 570 350, 610 415, 650 410 C 705 400, 730 300, 710 220 C 690 140, 660 120, 580 120 Z" fill="#030712" stroke="#1f2937" stroke-width="4" stroke-linejoin="round"/>
+                    
+                    <path d="M 320 122 L 480 122 L 460 210 L 340 210 Z" fill="#090d16" stroke="#1f2937" stroke-width="2" />
 
-                    <g transform="translate(160,35)">
-                        <rect width="100" height="20" rx="3" fill="#111827" stroke="#1f2937" stroke-width="2" />
-                        <rect id="svg-trig-6" width="100" height="20" rx="3" class="hud-trigger-bar" transform="scale(0, 1)"/>
-                        <text x="-45" y="15" fill="#4b5563" class="font-mono text-xs font-bold">LT (B6)</text>
+                    <path id="svg-btn-4" d="M 140 115 C 160 85, 250 85, 300 105 L 290 120 L 145 120 Z" class="hud-btn" />
+                    <path id="svg-btn-5" d="M 660 115 C 640 85, 550 85, 500 105 L 510 120 L 655 120 Z" class="hud-btn" />
+
+                    <g transform="translate(140, 35)">
+                        <rect width="130" height="22" rx="4" class="hud-trigger-bg" />
+                        <rect id="svg-trig-6" width="130" height="22" rx="4" class="hud-trigger-bar" transform="scale(0, 1)"/>
+                        <text x="-55" y="16" fill="#4b5563" class="font-mono text-xs font-bold">LT (B6)</text>
                     </g>
-                    <g transform="translate(240, 220)">
-                        <rect width="100" height="20" rx="3" fill="#111827" stroke="#1f2937" stroke-width="2" />
-                        <rect id="svg-trig-7" width="100" height="20" rx="3" class="hud-trigger-bar" transform="scale(0, 1)"/>
-                        <text x="110" y="15" fill="#4b5563" class="font-mono text-xs font-bold">RT (B7)</text>
+
+                    <g transform="translate(530, 35)">
+                        <rect width="130" height="22" rx="4" class="hud-trigger-bg" />
+                        <rect id="svg-trig-7" width="130" height="22" rx="4" class="hud-trigger-bar" transform="scale(0, 1)"/>
+                        <text x="140" y="16" fill="#4b5563" class="font-mono text-xs font-bold">RT (B7)</text>
                     </g>
-                    <g transform="translate(240, 220)">
-                        <rect id="svg-btn-12" x="-12" y="-36" width="24" rx="2" class="hud-btn" />
-                        <rect id="svg-btn-13" x="-12" y="10" width="24" height="26" rx="2" class="hud-btn" />
-                        <rect id="svg-btn-14" x="-36" y="-12" width="26" height="24" rx="2" class="hud-btn" />
-                        <rect id="svg-btn-15" x="10" y="-12" width="26" height="24" rx="2" class="hud-btn" />
-                        <circle cx="0" cy="0" r="12" fill="#030712"/>
+
+                    <g transform="translate(210, 205)">
+                        <rect id="svg-btn-12" x="-12" y="-38" width="24" height="26" rx="3" class="hud-btn" />
+                        <rect id="svg-btn-13" x="-12" y="12" width="24" height="26" rx="3" class="hud-btn" />
+                        <rect id="svg-btn-14" x="-38" y="-12" width="26" height="24" rx="3" class="hud-btn" />
+                        <rect id="svg-btn-15" x="12" y="-12" width="26" height="24" rx="3" class="hud-btn" />
+                        <circle cx="0" cy="0" r="14" fill="#030712"/>
                     </g>
-                    <g transform="translate(560, 150)">
-                        <circle id="svg-btn-3" cx="0" cy="-32" r="14" class="hud-btn" /> <text x="-4" y="-28" fill="#4b5563" class="font-bold text-xs pointer-events-none">Y</text>
-                        <circle id="svg-btn-1" cx="32" cy="0" r="14" class="hud-btn" /> <text x="29" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">B</text>
-                        <circle id="svg-btn-0" cx="0" cy="32" r="14" class="hud-btn" /> <text x="-4" y="36" fill="#4b5563" class="font-bold text-xs pointer-events-none">A</text>
-                        <circle id="svg-btn-2" cx="-32" cy="0" r="14" class="hud-btn" /> <text x="-36" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">X</text>
+
+                    <g transform="translate(590, 205)">
+                        <circle id="svg-btn-3" cx="0" cy="-34" r="15" class="hud-btn" /> <text x="-4" y="-30" fill="#4b5563" class="font-bold text-xs pointer-events-none">Y</text>
+                        <circle id="svg-btn-1" cx="34" cy="0" r="15" class="hud-btn" /> <text x="30" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">B</text>
+                        <circle id="svg-btn-0" cx="0" cy="34" r="15" class="hud-btn" /> <text x="-4" y="38" fill="#4b5563" class="font-bold text-xs pointer-events-none">A</text>
+                        <circle id="svg-btn-2" cx="-34" cy="0" r="15" class="hud-btn" /> <text x="-38" y="4" fill="#4b5563" class="font-bold text-xs pointer-events-none">X</text>
                     </g>
-                    <ellipse id="svg-btn-8" cx="360" cy="140" rx="15" ry="7" class="hud-btn" />
-                    <ellipse id="svg-btn-9" cx="440" cy="140" rx="15" ry="7" class="hud-btn" />
-                    <g transform="translate(200, 140)">
-                        <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
+
+                    <rect id="svg-btn-8" x="305" y="145" width="22" height="10" rx="4" transform="rotate(-15, 305, 145)" class="hud-btn" />
+                    <rect id="svg-btn-9" x="475" y="145" width="22" height="10" rx="4" transform="rotate(15, 475, 145)" class="hud-btn" />
+
+                    <g transform="translate(325, 295)">
+                        <circle cx="0" cy="0" r="42" class="hud-stick-base"/>
                         <circle cx="0" cy="0" r="6" fill="#1f2937" />
-                        <circle id="svg-stick-0" cx="0" cy="0" r="22" class="hud-stick" />
-                        <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 1 (L)</text>
+                        <circle id="svg-stick-0" cx="0" cy="0" r="24" class="hud-stick" />
+                        <text x="-28" y="58" fill="#4b5563" class="font-mono text-[10px]">STICK 1 (L)</text>
                     </g>
-                    <g transform="translate(500, 230)">
-                        <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
+
+                    <g transform="translate(475, 295)">
+                        <circle cx="0" cy="0" r="42" class="hud-stick-base"/>
                         <circle cx="0" cy="0" r="6" fill="#1f2937" />
-                        <circle id="svg-stick-1" cx="0" cy="0" r="22" class="hud-stick" />
-                        <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 2 (R)</text>
+                        <circle id="svg-stick-1" cx="0" cy="0" r="24" class="hud-stick" />
+                        <text x="-28" y="58" fill="#4b5563" class="font-mono text-[10px]">STICK 2 (R)</text>
                     </g>
                 </svg>
+            </div>
+
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
+                    <div>
+                        <span class="text-indigo-400 block font-bold mb-1">Axis_L [Left Analog]</span>
+                        X: <span id="stick-0-x-val" class="text-gray-400 mr-4">0.00</span>
+                        Y: <span id="stick-0-y-val" class="text-gray-400">0.00</span>
+                    </div>
+                    <span id="stick-0-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
+                </div>
+                <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
+                    <div>
+                        <span class="text-indigo-400 block font-bold mb-1">Axis_R [Right Analog]</span>
+                        X: <span id="stick-1-x-val" class="text-gray-400 mr-4">0.00</span>
+                        Y: <span id="stick-1-y-val" class="text-gray-400">0.00</span>
+                    </div>
+                    <span id="stick-1-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
                 </div>
             </div>
-         <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
-                <div>
-                    <span class="text-indigo-400 block font-bold mb-1">Axis_L</span>
-                    X: <span id="stick-0-x-val" class="text-gray-400 mr-4">0.00</span>
-                    Y: <span id="stick-0-y-val" class="text-gray-400">0.00</span>
-                </div>
-                <span id="stick-0-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
+
+            <div class="w-full p-4 bg-gray-950 rounded-xl border border-gray-800 text-xs text-gray-500 flex justify-between items-center font-mono">
+                <div><span class="font-bold text-gray-400">controller id:</span> <span id="gamepad-id"></span></div>
+                <div class="text-[10px] text-gray-600">60hz refresh rate</div>
             </div>
-            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
-                <div>
-                    <span class="text-indigo-400 block font-bold mb-1">Axis_R</span>
-                    X: <span id="stick-1-x-val" class="text-gray-400 mr-4">0.00</span>
-                    Y: <span id="stick-1-y-val" class="text-gray-400">0.00</span>
-                </div>
-                <span id="stick-1-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
-            </div>
-         </div>
-         <div class="w-full p-4 bg-gray-950 rounded-xl border border-gray-800 text-xs text-gray-500 flex justify-between items-center font-mono">
-            <div><span class="font-bold text-gray-400">controller id:</span> <span id="gamepad-id"></span></div>
-            <div class="text-[10px] text-gray-600">60hz refresh rate</div>
-         </div>
            
         </main>
 
         <script>
-      const statusDiv = document.getElementById('status');
-      const displayMain = document.getElementById('controller-display');
-      const gamepadIdSpan = document.getElementById('gamepad-id');
+            const statusDiv = document.getElementById('status');
+            const displayMain = document.getElementById('controller-display');
+            const gamepadIdSpan = document.getElementById('gamepad-id');
 
-      let gamepadIndex = null;
+            let gamepadIndex = null;
 
-      window.addEventListener("gamepadconnected", (e) => {
-        console.log("Gamepad connected:", e.gamepad);
-        gamepadIndex = e.gamepad.index;
-        statusDiv.textContent = `connected: ${e.gamepad.id.split(' (')[0]}`;
-        statusDiv.classList.remove('border-red-500/30', 'text-red-400');
-        statusDiv.classList.add('border-green-500/30', 'text-green-400');
-        displayMain.classList.remove('hidden');
+            window.addEventListener("gamepadconnected", (e) => {
+                console.log("Gamepad connected:", e.gamepad);
+                gamepadIndex = e.gamepad.index;
+                statusDiv.textContent = `connected: ${e.gamepad.id.split(' (')[0]}`;
+                statusDiv.classList.remove('border-red-500/30', 'text-red-400');
+                statusDiv.classList.add('border-green-500/30', 'text-green-400');
+                displayMain.classList.remove('hidden');
 
-        gamepadIdSpan.textContent = e.gamepad.id;
-        requestAnimationFrame(updateLoop)
-      });
+                gamepadIdSpan.textContent = e.gamepad.id;
+                requestAnimationFrame(updateLoop);
+            });
 
-      window.addEventListener("gamepaddisconnected", (e) => {
-        console.log("Gamepad disconnected:");
-        if (gamepadIndex === e.gamepad.index) {
-          gamepadIndex = null;
-          statusDiv.textContent = "no controller found brah";
-          statusDiv.classList.remove('border-green-500/30', 'text-green-400');
-          statusDiv.classList.add('border-red-500/30', 'text-red-400');
-          displayMain.classList.add('hidden');
-        }
-      });
-
-      function updateLoop() {
-        if (gamepadIndex === null) return;
-        const gamepad = navigator.getGamepads()[gamepadIndex];
-        if (gamepad) {
-            gamepad.buttons.forEach((button, index) => {
-                const svgBtn = document.getElementById(`svg-btn-${index}`);
-                if (svgBtn) {
-                    if (button.pressed) {
-                        svgBtn.classList.add('active');
-                    } else {
-                        svgBtn.classList.remove('active');
-                    }
+            window.addEventListener("gamepaddisconnected", (e) => {
+                console.log("Gamepad disconnected:");
+                if (gamepadIndex === e.gamepad.index) {
+                    gamepadIndex = null;
+                    statusDiv.textContent = "no controller found brah";
+                    statusDiv.classList.remove('border-green-500/30', 'text-green-400');
+                    statusDiv.classList.add('border-red-500/30', 'text-red-400');
+                    displayMain.classList.add('hidden');
                 }
             });
-            const trigL = document.getElementById('svg-trig-6');
-            const trigR = document.getElementById('svg-trig-7');
-            if (trigL && gamepad.buttons[6]) trigL.style.transform = `scale(${gamepad.buttons[6].value}, 1)`;
-            if (trigR && gamepad.buttons[7]) trigR.style.transform = `scale(${gamepad.buttons[7].value}, 1)`;
-            const totalSticks = Math.min(2, Math.ceil(gamepad.axes.length / 2));
-            for (let i = 0; i < totalSticks; i++) {
-                const xAxisIndex = i * 2;
-                const yAxisIndex = (i * 2) + 1;
-                const xValue = gamepad.axes[xAxisIndex] || 0;
-                const yValue = gamepad.axes[yAxisIndex] !== undefined ? gamepad.axes[yAxisIndex] : 0;
-                const xSpan = document.getElementById(`stick-${i}-x-val`);
-                const ySpan = document.getElementById(`stick-${i}-y-val`);
-                const hudStickCircle = document.getElementById(`svg-stick-${i}`);
-                const statusBadge = document.getElementById(`stick-${i}-drift-status`);
-                if (xSpan && ySpan && hudStickCircle) {
-                    xSpan.textContent = xValue.toFixed(2);
-                    ySpan.textContent = yValue.toFixed(2);
-                    const accuracyThreshold = 0.05;
-                    const hasInput = Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold;
-                    const stickClickButton = i === 0 ? 10 : 11;
-                    const isClicked = gamepad.buttons[stickClickButton]?.pressed;
-                    if (isClicked) {
-                        hudStickCircle.classList.add('active');
-                    } else {
-                        hudStickCircle.classList.remove('active');
-                    }
-                    if (hasInput) {
-                        hudStickCircle.classList.add('drift');
-                        if (statusBadge) {
-                            statusBadge.textContent = 'drift detected';
-                            statusBadge.className = "text-amber-500 font-bold bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20";
-                        }
-                    } else {
-                        hudStickCircle.classList.remove('drift');
-                        if (statusBadge) {
-                            statusBadge.textContent = 'no drift';
-                            statusBadge.className = "text-green-500 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20";
-                        }
-                    }
-                    const maxPixels = 18;
-                    const translateX = xValue * maxPixels;
-                    const translateY = yValue * maxPixels;
-                    hudStickCircle.style.transform = `translate(${translateX}px, ${translateY}px)`;
-                }
-            }
-        }
-        requestAnimationFrame(updateLoop);
-    }
 
-</script>
+            function updateLoop() {
+                if (gamepadIndex === null) return;
+                const gamepad = navigator.getGamepads()[gamepadIndex];
+                
+                if (gamepad) {
+    
+                    gamepad.buttons.forEach((button, index) => {
+                        const svgBtn = document.getElementById(`svg-btn-${index}`);
+                        if (svgBtn) {
+                            if (button.pressed) {
+                                svgBtn.classList.add('active');
+                            } else {
+                                svgBtn.classList.remove('active');
+                            }
+                        }
+                    });
+                    
+                    const trigL = document.getElementById('svg-trig-6');
+                    const trigR = document.getElementById('svg-trig-7');
+                    if (trigL && gamepad.buttons[6]) trigL.style.transform = `scale(${gamepad.buttons[6].value}, 1)`;
+                    if (trigR && gamepad.buttons[7]) trigR.style.transform = `scale(${gamepad.buttons[7].value}, 1)`;
+                    
+                    const totalSticks = Math.min(2, Math.ceil(gamepad.axes.length / 2));
+                    
+                    for (let i = 0; i < totalSticks; i++) {
+                        const xAxisIndex = i * 2;
+                        const yAxisIndex = (i * 2) + 1;
+                        const xValue = gamepad.axes[xAxisIndex] || 0;
+                        const yValue = gamepad.axes[yAxisIndex] !== undefined ? gamepad.axes[yAxisIndex] : 0;
+                        
+                        const xSpan = document.getElementById(`stick-${i}-x-val`);
+                        const ySpan = document.getElementById(`stick-${i}-y-val`);
+                        const hudStickCircle = document.getElementById(`svg-stick-${i}`);
+                        const statusBadge = document.getElementById(`stick-${i}-drift-status`);
+                        
+                        if (xSpan && ySpan && hudStickCircle) {
+                            xSpan.textContent = xValue.toFixed(2);
+                            ySpan.textContent = yValue.toFixed(2);
+                            
+                            const accuracyThreshold = 0.05;
+                            const hasInput = Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold;
+                            
+                            const stickClickButton = i === 0 ? 10 : 11;
+                            const isClicked = gamepad.buttons[stickClickButton]?.pressed;
+                            
+                            if (isClicked) {
+                                hudStickCircle.classList.add('active');
+                            } else {
+                                hudStickCircle.classList.remove('active');
+                            }
+                            
+                            if (hasInput) {
+                                hudStickCircle.classList.add('drift');
+                                if (statusBadge) {
+                                    statusBadge.textContent = 'drift detected';
+                                    statusBadge.className = "text-amber-500 font-bold bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20";
+                                }
+                            } else {
+                                hudStickCircle.classList.remove('drift');
+                                if (statusBadge) {
+                                    statusBadge.textContent = 'no drift';
+                                    statusBadge.className = "text-green-500 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20";
+                                }
+                            }
+                            
+         
+                            const maxPixels = 16;
+                            const translateX = xValue * maxPixels;
+                            const translateY = yValue * maxPixels;
+                            hudStickCircle.style.transform = `translate(${translateX}px, ${translateY}px)`;
+                        }
+                    }
+                }
+                requestAnimationFrame(updateLoop);
+            }
+        </script>
     </body>
 </html>
