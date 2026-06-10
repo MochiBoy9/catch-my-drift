@@ -63,141 +63,133 @@
                         <circle id="svg-stick-0" cx="0" cy="0" r="22" class="hud-stick" />
                         <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 1 (L)</text>
                     </g>
-
+                    <g transform="translate(500, 230)">
+                        <circle cx="0" cy="0" r="40" fill="none" stroke="#1f2937" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="6" fill="1f2937" />
+                        <circle id="svg-stick-1" cx="0" cy="0" r="22" class="hud-stick" />
+                        <text x="-20" y="55" fill="#4b5563" class="font-mono text-[10px]">stick 2 (R)</text>
+                    </g>
                 </svg>
-                
                 </div>
             </div>
-            <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 shadow-xl flex flex-col justify-between">
-                <h2 class="text-xl font-semibold mb-4 text-indigo-300 border-b border-gray-800 pb-2">analog sticks</h2>
-                <div id="axes-container" class="space-y-4">
+         <div class="w-full grid grid-cols-1 md-grid-cols-2 gap-4 text-xs font-mono">
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
+                <div>
+                    <span class="text-indigo-400 block font-bold mb-1">Axis_L</span>
+                    X: <span id="stick-0-x-val" class="text-gray-400 mr-4">0.00</span>
+                    Y: <span id="stick-0-y-val" class="text-gray-400">0.00</span>
                 </div>
+                <span id="stick-0-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
             </div>
-            <div class="mt-6 p-4 bg-gray-950 rounded-xl border border-gray-800 text-xs text-gray-500">
-                <span class="font-bold text-gray-400">controller id:</span><span id="gamepad-id"></span>
+            <div class="bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-inner flex justify-between items-center">
+                <div>
+                    <span class="text-indigo-400 block font-bold mb-1">Axis_R</span>
+                    X: <span id="stick-1-x-val" class="text-gray-400 mr-4">0.00</span>
+                    Y: <span id="stick-1-y-val" class="text-gray-400">0.00</span>
+                </div>
+                <span id="stick-1-drift-status" class="text-green-500 font-bold bg-green-500/20 px-2 py-1 rounded border border-green-500/50">no drift</span>
             </div>
+         </div>
+         <div class="w-full p-4 bg-gray-950 rounded-xl border border-gray-800 text-xs text-gray-500 flex justify-between items-center font-mono">
+            <div><span class="font-bold text-gray-400">controller id:</span> <span id="gamepad-id"></span></div>
+            <div class="text-[10px] text-gray-600">60hz refresh rate</div>
+         </div>
+           
         </main>
 
         <script>
-            const statusDiv = document.getElementById('status');
-            const displayMain = document.getElementById('controller-display');
-            const buttonsContainer = document.getElementById('buttons-container');
-            const axesContainer = document.getElementById('axes-container');
-            const gamepadIdSpan = document.getElementById('gamepad-id');
+      const statusDiv = document.getElementById('status');
+      const displayMain = document.getElementById('controller-display');
+      const gamepadIdSpan = document.getElementById('gamepad-id');
 
-            let gamepadIndex = null;
+      let gamepadIndex = null;
 
-            window.addEventListener("gamepadconnected", (e) => {
-                console.log("controller currently connected:", e.gamepad);
-                gamepadIndex = e.gamepad.index;
-                statusDiv.textContent = `connected: ${e.gamepad.id}`;
-                statusDiv.classList.remove('border-red-500/30', 'text-red-400');
-                statusDiv.classList.add('border-green-500/30', 'text-green-400');
-                displayMain.classList.remove('hidden')
-                setupUI(e.gamepad);
-                requestAnimationFrame(updateLoop);
-            });
-            window.addEventListener("gamepaddisconnected", (e) => {
-                console.log("controller disconnected")
-                if (gamepadIndex === e.gamepad.index) {
-                    gamepadIndex = null;
-                    statusDiv.textContent = "no controller connected";
-                    statusDiv.classList.remove('border-green-500/30', 'text-green-400');
-                    statusDiv.classList.add('border-red-500/30', 'text-red-400');
-                    displayMain.classList.add('hidden');
+      window.addEventListener("gamepadconnected", (e) => {
+        console.log("Gamepad connected:", e.gamepad);
+        gamepadIndex = e.gamepad.index;
+        statusDiv.textContent = `connected: ${e.gamepad.id.split(' (')[0]}`;
+        statusDiv.classList.remove('border-red-500/30', 'text-red-400');
+        statusDiv.classList.add('border-green-500/30', 'text-green-400');
+        displayMain.classList.remove('hidden');
+
+        gamepadIdSpan.textContent = e.gamepad.id;
+        requestAnimationFrame(updateLoop)
+      });
+
+      window.addEventListener("gamepaddisconnected", (e) => {
+        console.log("Gamepad disconnected:");
+        if (gamepadIndex === e.gamepad.index) {
+          gamepadIndex = null;
+          statusDiv.textContent = "no controller found brah";
+          statusDiv.classList.remove('border-green-500/30', 'text-green-400');
+          statusDiv.classList.add('border-red-500/30', 'text-red-400');
+          displayMain.classList.add('hidden');
+        }
+      });
+
+      function updateLoop() {
+        if (gamepadIndex === null) return;
+        const gamepad = navigator.getGamepads()[gamepadIndex];
+        if (gamepad) {
+            gamepad.buttons.forEach((button, index) => {
+                const svgBtn = document.getElementById(`svg-btn-${index}`);
+                if (svgBtn) {
+                    if (button.pressed) {
+                        svgBtn.classList.add('active');
+                    } else {
+                        svgBtn.classList.remove('active');
+                    }
                 }
             });
-            function setupUI(gamepad) {
-                buttonsContainer.innerHTML = '';
-                axesContainer.innerHTML = '';
-                gamepadIdSpan.textContent = gamepad.id;
-                gamepad.buttons.forEach((button, index) => {
-                    const btnDiv = document.createElement('div');
-                    btnDiv.id = `btn-${index}`;
-                    btnDiv.className = "flex justify-between items-center bg-gray-950 p-3 rounded-xl border border-gray-800 transition-colors";
-                    btnDiv.innerHTML = `
-                    <span class="text-sm font-medium text-gray-500">Btn ${index}</span>
-                    <span class="val text-xs font-mono bg-gray-900 px-2 py-1 rounded border border-gray-800 text-gray-500">0.00</span>
-                    `;
-                    buttonsContainer.appendChild(btnDiv);
-                });
-
-                const totalSticks = Math.ceil(gamepad.axes.length / 2);
-                for (let i = 0; i < totalSticks; i++) {
-                    const stickDiv = document.createElement('div');
-                    stickDiv.className = "bg-gray-950 p-4 rounded-xl border border-gray-800 flex flex-col items-center gap-4";
-                    stickDiv.innerHTML = `
-                    <div class="w-full flex justify-between text-sm font-medium text-gray-400">
-                        <span>Stick ${i + 1}</span>
-                        <span class="font-mono text-xs text-indigo-400">
-                            X: <span id="stick-${i}-x-val">0.00</span> | Y: <span id="stick-${i}-y-val">0.00</span>
-                        </span>
-                    </div>
-                    <div class="relative w-32 h-32 bg-gray-900 rounded-full border border-gray-800 flex items-center justify-center">
-                        <div class="absolute w-full h-[1px] bg-gray-800"></div>
-                        <div class="absolute h-full w-[1px] bg-gray-800"></div>
-                        <div class="absolute w-6 h-6 border border-dashed border-gray-700 rounded-full"></div>
-                        <div id="stick-${i}-dot" class="absolute w-4 h-4 bg-indigo-500 rounded-full shadow-lg shadow-indigo-500/50 transition-all duration-75" style="transform: translate(0px, 0px)"></div>
-                    </div>
-                `;
-                axesContainer.appendChild(stickDiv);
-            }
-        }
-        function updateLoop() {
-            if (gamepadIndex === null) return;
-            const gamepad = navigator.getGamepads()[gamepadIndex];
-            if (gamepad) {
-                gamepad.buttons.forEach((button, index) => {
-                    const btnDiv = document.getElementById(`btn-${index}`);
-                    if (btnDiv) {
-                        const valSpan = btnDiv.querySelector('.val');
-                        valSpan.textContent = button.value.toFixed(2);
-                        if (button.pressed) {
-                            btnDiv.classList.remove('bg-gray-950', 'border-gray-800');
-                            btnDiv.classList.add('bg-indigo-900/20', 'border-indigo-500');
-                            valSpan.classList.add('text-indigo-400', 'border-indigo-500/50');
-                        } else {
-                            btnDiv.classList.remove('bg-indigo-600/20', 'border-indigo-500');
-                            btnDiv.classList.add('bg-gray-950', 'border-gray-800');
-                            valSpan.classList.remove('text-indigo-400', 'border-indigo-500/50');
+            const trigL - document.getElementById('svg-trig-6');
+            const trigR = document.getElementById('svg-trig-7');
+            if (trigL && gamepad.buttons[6]) trigL.style.transform = `scale(${gamepad.buttons[6].value}, 1)`;
+            if (trigR && gamepad.buttons[7]) trigR.style.transform = `scale(${gamepad.buttons[7].value}, 1)`;
+            const totalSticks = Math.min(2, Math.ceil(gamepad.axes.length / 2));
+            for (let i = 0; i < totalSticks; i++) {
+                const xAxisIndex = i * 2;
+                const yAxisIndex = (i * 2) + 1;
+                const xValue = gamepad.axes[xAxisIndex] || 0;
+                const yValue = gamepad.axes[yAxisIndex] !== undefined ? gamepad.axes[yAxisIndex] : 0;
+                const xSpan = document.getElementById(`stick-${i}-x-val`);
+                const ySpan = document.getElementById(`stick-${i}-y-val`);
+                const hudStickCircle = document.getElementById(`svg-stick-${i}`);
+                const statusBadge = document.getElementById('stick-${i}-drift-status');
+                if (xSpan && ySpan && hudStickCircle) {
+                    xSpan.textContent = xValue.toFixed(2);
+                    ySpan.textContent = yValue.toFixed(2);
+                    const accuracyThreshold = 0.05;
+                    const hasInput = Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold;
+                    const stickClickButton = i === 0 ? 10 : 11;
+                    const isClicked = gamepad.butons[stickClickButton]?.pressed;
+                    if (isClicked) {
+                        hudStickCircle.classList.add('active');
+                    } else {
+                        hudStickCircle.classList.remove('active');
+                    }
+                    if (hasInput) {
+                        hudStickCircle.classList.add('drift');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'drift detected';
+                            statusBadge.className = "text-amber-500 font-bold bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20";
+                        }
+                    } else {
+                        hudStickCircle.classList.remove('drift');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'no drift';
+                            statusBadge.className = "text-green=500 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20";
                         }
                     }
-                });
-                 const totalSticks = Math.ceil(gamepad.axes.length / 2);
-    for (let i = 0; i < totalSticks; i++) {
-        const xAxisIndex = i * 2;
-        const yAxisIndex = (i * 2) + 1;
-        const xValue = gamepad.axes[xAxisIndex] || 0;
-        const yValue = gamepad.axes[yAxisIndex] !== undefined ? gamepad.axes[yAxisIndex] : 0;
-        const xSpan = document.getElementById(`stick-${i}-x-val`);
-        const ySpan = document.getElementById(`stick-${i}-y-val`);
-        const dot = document.getElementById(`stick-${i}-dot`);
-        if (xSpan && ySpan && dot) {
-            xSpan.textContent = xValue.toFixed(2);
-            ySpan.textContent = yValue.toFixed(2);
-            const accuracyThreshold = 0.01;
-            if (Math.abs(xValue) > accuracyThreshold || Math.abs(yValue) > accuracyThreshold) {
-                dot.classList.remove('bg-indigo-500', 'shadow-indigo-500/50');
-                dot.classList.add('bg-amber-400', 'shadow-amber-400/50')
-                xSpan.classList.add('text-amber-400');
-                ySpan.classList.add('text-amber-400');
-            } else {
-                dot.classList.remove('bg-amber-400', 'shadow-amber-400/50');
-                dot.classList.add('bg-indigo-500', 'shadow-indigo-500/50');
-                xSpan.classList.remove('text-amber-400');
-                ySpan.classList.remove('text-amber-400');
+                    const maxPixels = 18;
+                    const translateX = xValue * maxPixels;
+                    const translateY = yValue * maxPixels;
+                    hudStickCircle.style.transform = `translate(${translateX}px, ${translateY}px)`;
+                }
             }
-              const maxPixels = 56;
-        const translateX = xValue * maxPixels;
-        const translateY = yValue * maxPixels;
-        dot.style.transform = `translate(${translateX}px, ${translateY}px)`;
-            }
-        }  
+        }
+        requestAnimationFrame(updateLoop);
     }
-    requestAnimationFrame(updateLoop);
-}
 
-
-        </script>
+</script>
     </body>
 </html>
